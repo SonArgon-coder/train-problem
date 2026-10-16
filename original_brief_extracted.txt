@@ -1,0 +1,237 @@
+Evaluation Brief for Antigravity
+Grade my project against the problem statement. Be the harshest, fairest examiner I will ever face.
+1. Your Role
+Antigravity, you are now the strictest, most demanding professor in the department. I was given the problem statement summarised in Section 2 and I have built a solution to it. The project is in the current workspace.
+Your job is to evaluate what I actually built, requirement by requirement, and give it the score it truly deserves. Every single thing the problem statement asks for must be scored individually. I do not want comfort, encouragement, or diplomacy. I want pure justice: nothing inflated, nothing invented, nothing skipped.
+2. The Problem Statement, in Brief
+Title: AI-Powered Intelligent Railway Travel & Autonomous AI Governance Platform (Indian Railways).
+Challenge: Build a platform that delivers predictive, personalised, and secure railway services to passengers, and an Agentic AI-powered governance layer that continuously monitors, governs, optimises, secures, and audits every AI model behind those services across its whole lifecycle.
+Structure: seven passenger-facing AI modules (Modules 1–7), one centralised autonomous "AI-for-AI" governance platform (Module 8), five non-functional requirement areas, and an expected outcome of one unified ecosystem where passenger AI and governance agents work together. The full checklist to score is in Section 6.
+3. Ground Rules (Non-Negotiable)
+No buttering. No praise used to cushion criticism. No "great effort", no "impressive for a student", no "overall a solid foundation". State what is missing and what is broken.
+Evidence or it does not count. Every score must cite a file path, function, line, or the actual output of running the code. If you cannot find evidence, the score is 0.
+Claims are not proof. README text, comments, slide wording, UI labels, and function names are claims. Verify by reading the code and running it.
+Fake AI is worth almost nothing. Hardcoded values, random numbers, lookup tables, or static mock data presented as AI predictions score 1 at most, and you must call it out as fake.
+Planned is not built. TODOs, "future scope", and empty stubs score 0.
+Score every line item. Do not merge items, skip items, or let a strong item hide a weak one. If something cannot be verified, write "Not verifiable" and score it 0 with the reason.
+Be harsh, but be correct. If something is genuinely excellent, give full marks and say so in one factual sentence. Do not manufacture flaws to sound tough. Score what is there: no more, no less.
+Judge against the problem statement, not against other student projects. The standard is what the statement demands, as an external examiner would read it.
+When torn between two scores because the evidence is ambiguous, take the lower one. When the evidence is clear, give exactly what it earns.
+Read-only. Do not edit, fix, or improve my code during evaluation. You may run it, test it, and inject test inputs.
+4. How to Inspect the Project
+Map the whole repository first: list every module, service, notebook, model file, dataset, config, and test.
+Read the README and any documentation, then treat every claim in it as something to be verified.
+Run the application, tests, and notebooks. Note anything that fails to start, crashes, or only works with manual intervention.
+Inspect the models: Is a model actually trained? On what data (real, public, or synthetic)? Which metrics, on which split? Are there saved artifacts? Does it beat a naive baseline?
+Inspect the agents: Do they make real tool calls and LLM calls, or is the logic scripted? Is there an audit trail of what they decided and why?
+Inspect the governance layer: Does it monitor the real models from Modules 1–7, or is it a standalone dashboard showing made-up numbers?
+Look for evidence of the non-functional requirements: containers, queues, caching, authentication, role-based access, logging, backups or failover, load-test results, latency measurements.
+Declare any synthetic or simulated data clearly in your report. Synthetic data is acceptable only if disclosed and realistic. Presenting synthetic data as real is misrepresentation and must be flagged.
+5. Scoring System
+5.1 Line-item scale (0 to 5)
+Every bullet in Section 6 is one line item. Score each from 0 to 5. A 5 should be rare.
+Score
+Meaning
+0
+Absent. Not built, or exists only in README, slides, or UI text.
+1
+Fake or broken. Hardcoded, random, or mocked output posing as AI, or a stub that does not run.
+2
+Barely there. Runs, but trivial, disconnected from the rest of the system, and not properly evaluated.
+3
+Works but weak. Real implementation with notable gaps: weak data, no proper metrics, poor integration, or fragile.
+4
+Good. Works end to end, evaluated with proper metrics, integrated, with only minor gaps.
+5
+Excellent. Fully meets the requirement as written, demonstrably, with evidence a real examiner would accept.
+5.2 Calculation
+Part score (%) = sum of line-item scores ÷ (5 × number of line items in that part) × 100.
+Weighted points = Part score (%) × the part's weight. Add all weighted points for the overall score out of 100.
+Part
+Weight
+Modules 1 to 7 (each module)
+8% each (56% total)
+Module 8: Centralised AI Governance Platform
+24%
+Non-Functional Requirements
+12%
+Expected Outcome: Unified Integration
+8%
+Total
+100%
+5.3 Automatic caps
+A governance or monitoring feature that is a static chart or uses made-up numbers: maximum 1.
+A governance feature that is not connected to the real outputs of the models it claims to monitor: maximum 1.
+A prediction trained on synthetic data with no realism justification: maximum 3.
+Data claimed as real but actually synthetic: 0 for that item, and list it under misleading claims.
+Explainability, confidence scores, or audit trails that are asked for but only described in text: 0.
+Automated retraining, rollback, or remediation that needs a human to trigger it: maximum 2.
+Scalability, availability, or security claimed without architecture, configuration, or measurements: maximum 1.
+Booking performed without explicit user approval in the Travel Planner Agent: 0 for that item and flag it as a serious defect.
+5.4 Overall grade bands
+Score
+Band
+Meaning
+90 to 100
+Outstanding
+Close to production-grade. Would impress an external examiner.
+75 to 89
+Strong
+Solid and credible, with some real gaps.
+60 to 74
+Adequate
+Passes, but significant requirements are weak or missing.
+40 to 59
+Weak
+Mostly demo-level. Many requirements unmet.
+0 to 39
+Failing
+Does not meet the problem statement.
+6. What Must Be Scored
+Each bullet below is one line item scored 0 to 5. The "Hard test" under each module is how you should verify it. Do not take my word for anything.
+Part A: Passenger-Facing AI Modules (8% each)
+Module 1. Intelligent Ticket Confirmation Predictor
+Predict confirmation probability for Waiting List (WL) and RAC tickets.
+Estimate final berth allocation status.
+Analyse historical booking and cancellation trends.
+Provide confidence scores and prediction explainability.
+Continuously monitor prediction accuracy, and automatically retrain when performance degrades.
+Hard test: Submit a WL and an RAC scenario. Check for a probability, berth status, confidence score, and explanation. Confirm accuracy is measured on held-out data, not training data.
+Module 2. Smart Train Recommendation Engine
+Recommendation uses all seven factors: budget, journey duration, seat and berth availability, travel class, historical travel behaviour, train punctuality, passenger preferences. Score how many genuinely influence the output.
+Monitors recommendation relevance and accuracy.
+Detects recommendation bias.
+Explains the rationale behind each recommendation.
+Continuously optimises the recommendation models.
+Hard test: Run two very different passenger profiles. Outputs must differ for sensible reasons, and each must come with a rationale. Check for bias across fare or class segments.
+Module 3. Train Delay and Disruption Prediction
+Predict arrival and departure delays.
+Estimate station congestion levels.
+Provide proactive travel alerts.
+Recommend alternative travel options.
+Generate confidence scores and explainability reports.
+Detect model drift.
+Monitor prediction accuracy in real time.
+Trigger automated retraining workflows.
+Hard test: Compare the model to a naive baseline such as historical average delay. If it does not beat the baseline, say so. Check whether the data is live or static.
+Module 4. AI Travel Planner Agent
+Understand conversational travel requests.
+Search and compare travel options.
+Optimise routes subject to passenger constraints.
+Recommend the best itinerary.
+Assist in booking only after user approval.
+Coordinate with multiple AI agents and railway systems.
+Validate agent decisions.
+Monitor agent performance.
+Maintain complete audit trails.
+Detect abnormal agent behaviour.
+Hard test: Run the official example, "I want to travel from Pune to Delhi tomorrow under ₹1500 and reach before 10:00 AM", plus at least five other varied queries, including one impossible and one ambiguous. Confirm booking never proceeds without explicit approval.
+Module 5. Dynamic Fare Prediction Engine
+Predict fare movement.
+Forecast demand surges.
+Recommend optimal booking windows.
+Provide cost-saving recommendations.
+Monitor forecast accuracy.
+Detect anomalies in pricing models.
+Explain fare prediction outcomes.
+Hard test: Compare forecasts to a naive baseline using time-based validation, not a random split. Check that explanations actually exist.
+Module 6. AI-Powered Customer Support Assistant
+Multilingual conversational support, available 24×7.
+PNR status inquiries.
+Ticket booking support.
+Refund tracking.
+Cancellation policies.
+Travel recommendations and journey planning assistance.
+Detect hallucinations.
+Monitor response quality.
+Evaluate customer satisfaction.
+Maintain compliance and conversation auditability.
+Hard test: Chat in at least two Indian languages. Ask a question the knowledge base cannot answer: does it hallucinate or admit it does not know? Confirm conversation logs exist.
+Module 7. Fraud, Security, and Bot Detection
+Detect bulk booking bots.
+Identify suspicious transactions.
+Detect account misuse.
+Recognise anomalous behaviour patterns.
+Generate fraud risk scores.
+Monitor false positives and false negatives.
+Continuously update threat detection models.
+Provide explainable alerts and investigations.
+Hard test: Simulate a bot burst mixed with normal users. Report precision and recall. Every alert must show why it fired.
+Part B: Module 8. Centralised AI Governance Platform (24%)
+Model Health Monitoring
+Continuous model performance monitoring.
+SLA tracking.
+Service health assessment.
+Resource utilisation monitoring.
+Data Quality Monitoring
+Validate incoming data before inference.
+Detect missing, corrupted, or anomalous data.
+Prevent poor-quality predictions from being served.
+Drift and Performance Detection
+Data drift detection.
+Concept drift detection.
+Prediction quality degradation monitoring.
+User behaviour change detection.
+Bias and Hallucination Monitoring
+Fairness evaluation.
+Bias detection.
+Hallucination monitoring for Generative AI systems.
+Ethical AI compliance checks.
+Autonomous Root Cause Analysis
+Identify causes of performance degradation.
+Trace dependencies across systems.
+Recommend remediations.
+Automated Model Lifecycle Management
+Retraining trigger automation.
+Model version management.
+Deployment orchestration.
+Rollback mechanisms.
+Explainability and Transparency
+Explain model predictions.
+Generate governance reports.
+Maintain complete audit trails.
+Support regulatory compliance.
+Agentic AI Supervisory Layer
+AI agents monitoring AI agents.
+Automated issue resolution.
+Alert prioritisation.
+Closed-loop optimisation workflows.
+Hard test (failure injection): Corrupt incoming data and induce drift in one real model from Modules 1 to 7. The governance layer must detect it, find the root cause, trigger retraining, version the new model, then deploy or roll back, and log every step. If a human has to perform any step manually, say so and mark it down.
+Part C: Non-Functional Requirements (12%)
+Scalability
+Supports millions of passenger interactions daily.
+Scales across multiple AI services and models.
+Reliability
+High system availability.
+Fault-tolerant architecture.
+Disaster recovery mechanisms.
+Security
+Data privacy protection.
+Role-based access controls.
+Threat monitoring and response.
+Compliance
+Auditability.
+Explainability.
+Governance policies.
+Regulatory adherence.
+Performance
+Near real-time predictions.
+Low-latency conversational experience.
+Continuous monitoring and optimisation.
+Hard test: Look for architecture, configuration, and measured numbers (load tests, latency). Claims without them score 0 or 1.
+Part D: Expected Outcome, Unified Integration (8%)
+Passenger-facing AI modules and governance agents operate as one connected ecosystem, not separate demos.
+The governance layer receives real predictions, logs, and metrics from the passenger modules and acts on them.
+The overall result delivers trustworthy, transparent, compliant AI-driven decision-making at scale, as the statement describes.
+7. Required Report Format
+Write your evaluation to a file named EVALUATION_REPORT.md in the project root, with these sections in this order:
+Verdict. Overall score out of 100, grade band, and a blunt summary of five lines or fewer.
+Scorecard. A table with Part, Weight, Part score (%), and Weighted points.
+Line-item scores. For every module and part: Item, Score (0 to 5), Evidence (file, line, or run output), and Why not higher.
+Fake, misleading, or unverified claims. Everything the project claims but does not actually deliver.
+Top 10 gaps. Ranked by marks lost.
+Fix plan. For each of the top 10 gaps: what to build, and effort as Small, Medium, or Large.
+Viva questions. The 10 hardest questions an external examiner would ask, and the weakness each one targets.
+Do not end with encouragement, congratulations, or a motivational line. End with the viva questions.
+8. Final Instruction
+Start by listing the files and modules you found, then work through Section 6 in order without skipping anything. Judge the work, not the person. Be precise, be unsparing, and be correct. I would rather hear every hard truth from you now than from my examiner later.

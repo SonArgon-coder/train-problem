@@ -1,0 +1,289 @@
+version: "3.8"
+
+networks:
+  railway_net:
+    driver: bridge
+
+volumes:
+  redis_data:
+  postgres_data:
+  datasets_volume:
+  models_registry_volume:
+  audit_storage_volume:
+
+services:
+  # -------------------------------------------------------------
+  # Infrastructure Backbone: Redis Streams & PostgreSQL
+  # -------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: railway-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - railway_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: railway-postgres
+    environment:
+      POSTGRES_USER: railway_admin
+      POSTGRES_PASSWORD: railway_secure_pass
+      POSTGRES_DB: railway_ecosystem
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - railway_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U railway_admin -d railway_ecosystem"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # -------------------------------------------------------------
+  # Deterministic Data Generator & Live Simulator
+  # -------------------------------------------------------------
+  data-generator:
+    build:
+      context: .
+      dockerfile: data-generator/Dockerfile
+    container_name: railway-data-generator
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DATASETS_DIR=/app/datasets
+      - REGISTRY_DIR=/app/models_registry
+    volumes:
+      - datasets_volume:/app/datasets
+      - models_registry_volume:/app/models_registry
+    networks:
+      - railway_net
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # -------------------------------------------------------------
+  # Side A: Passenger AI Microservices
+  # -------------------------------------------------------------
+  wl-predictor:
+    build:
+      context: .
+      dockerfile: services/wl-predictor/Dockerfile
+    container_name: railway-wl-predictor
+    ports:
+      - "8001:8001"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - REGISTRY_DIR=/app/models_registry
+    volumes:
+      - models_registry_volume:/app/models_registry:ro
+    networks:
+      - railway_net
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  recommender:
+    build:
+      context: .
+      dockerfile: services/recommender/Dockerfile
+    container_name: railway-recommender
+    ports:
+      - "8002:8002"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DATASETS_DIR=/app/datasets
+    volumes:
+      - datasets_volume:/app/datasets:ro
+    networks:
+      - railway_net
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  delay-predictor:
+    build:
+      context: .
+      dockerfile: services/delay-predictor/Dockerfile
+    container_name: railway-delay-predictor
+    ports:
+      - "8003:8003"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - REGISTRY_DIR=/app/models_registry
+      - DATASETS_DIR=/app/datasets
+    volumes:
+      - models_registry_volume:/app/models_registry:ro
+      - datasets_volume:/app/datasets:ro
+    networks:
+      - railway_net
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  fare-predictor:
+    build:
+      context: .
+      dockerfile: services/fare-predictor/Dockerfile
+    container_name: railway-fare-predictor
+    ports:
+      - "8004:8004"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    networks:
+      - railway_net
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  planner-agent:
+    build:
+      context: .
+      dockerfile: services/planner-agent/Dockerfile
+    container_name: railway-planner-agent
+    ports:
+      - "8005:8005"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - LLM_PROVIDER=local
+      - RECOMMENDER_URL=http://recommender:8002
+      - DELAY_URL=http://delay-predictor:8003
+      - FARE_URL=http://fare-predictor:8004
+      - WL_URL=http://wl-predictor:8001
+    networks:
+      - railway_net
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  support-assistant:
+    build:
+      context: .
+      dockerfile: services/support-assistant/Dockerfile
+    container_name: railway-support-assistant
+    ports:
+      - "8006:8006"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DATASETS_DIR=/app/datasets
+    volumes:
+      - datasets_volume:/app/datasets:ro
+    networks:
+      - railway_net
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  fraud-detector:
+    build:
+      context: .
+      dockerfile: services/fraud-detector/Dockerfile
+    container_name: railway-fraud-detector
+    ports:
+      - "8007:8007"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - REGISTRY_DIR=/app/models_registry
+    volumes:
+      - models_registry_volume:/app/models_registry:ro
+    networks:
+      - railway_net
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # -------------------------------------------------------------
+  # Side B: Autonomous AI Governance Layer
+  # -------------------------------------------------------------
+  governance:
+    build:
+      context: .
+      dockerfile: governance/Dockerfile
+    container_name: railway-governance
+    ports:
+      - "8008:8008"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - REGISTRY_DIR=/app/models_registry
+      - DATASETS_DIR=/app/datasets
+      - AUDIT_STORAGE_DIR=/app/audit_storage
+    volumes:
+      - models_registry_volume:/app/models_registry
+      - datasets_volume:/app/datasets:ro
+      - audit_storage_volume:/app/audit_storage
+    networks:
+      - railway_net
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # -------------------------------------------------------------
+  # Edge: API Gateway
+  # -------------------------------------------------------------
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    container_name: railway-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - WL_SERVICE_URL=http://wl-predictor:8001
+      - RECOMMENDER_SERVICE_URL=http://recommender:8002
+      - DELAY_SERVICE_URL=http://delay-predictor:8003
+      - FARE_SERVICE_URL=http://fare-predictor:8004
+      - PLANNER_SERVICE_URL=http://planner-agent:8005
+      - SUPPORT_SERVICE_URL=http://support-assistant:8006
+      - FRAUD_SERVICE_URL=http://fraud-detector:8007
+      - GOVERNANCE_SERVICE_URL=http://governance:8008
+    networks:
+      - railway_net
+    depends_on:
+      - wl-predictor
+      - recommender
+      - delay-predictor
+      - fare-predictor
+      - planner-agent
+      - support-assistant
+      - fraud-detector
+      - governance
+
+  # -------------------------------------------------------------
+  # Client: Next.js 14 Web Frontend (/app, /ops, /admin)
+  # -------------------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: railway-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - INTERNAL_GATEWAY_URL=http://gateway:8000
+    networks:
+      - railway_net
+    depends_on:
+      - gateway
+
+  # -------------------------------------------------------------
+  # Observability: Prometheus Metrics
+  # -------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: railway-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - railway_net
+    depends_on:
+      - gateway

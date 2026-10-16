@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Node.js dependencies and build output
+node_modules/
+.next/
+dist/
+build/
+tsconfig.tsbuildinfo
+
+# Backups and temporary test archives
+backups/*.zip
+backups/test_restore*/
+backups/tamper_test*/
+
+# Python virtual environment
+venv/
+env/
+.venv/
+ENV/
+
+# Testing & Cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local environment overrides
+.env.local
